@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Placemark>
+    <name>Kömeç Mahallesi 149-ada-4-parsel</name>
+    <ExtendedData>
+      <Data name="İl">
+        <value>Tokat</value>
+      </Data>
+      <Data name="İlçe">
+        <value>Merkez</value>
+      </Data>
+      <Data name="Mahalle">
+        <value>Kömeç</value>
+      </Data>
+      <Data name="Ada">
+        <value>149</value>
+      </Data>
+      <Data name="ParselNo">
+        <value>4</value>
+      </Data>
+      <Data name="Alan">
+        <value>2,013.03</value>
+      </Data>
+      <Data name="Pafta">
+        <value>H36-B-20-A-1</value>
+      </Data>
+      <Data name="Nitelik">
+        <value>Tarla</value>
+      </Data>
+      <Data name="Mevkii">
+        <value>Beyaslan</value>
+      </Data>
+    </ExtendedData>
+    <Polygon>
+      <outerBoundaryIs>
+        <LinearRing>
+          <coordinates>36.459490000000002,40.34742
+36.45964,40.347470000000001
+36.459609999999998,40.347540000000002
+36.459600000000002,40.347569999999997
+36.459539999999997,40.347679999999997
+36.459420000000001,40.347639999999998
+36.459249999999997,40.347569999999997
+36.45908,40.347499999999997
+36.458889999999997,40.347430000000003
+36.45872,40.347360000000002
+36.45861,40.347329999999999
+36.458660000000002,40.347279999999998
+36.4587,40.347140000000003
+36.458730000000003,40.347149999999999
+36.458939999999998,40.347230000000003
+36.459139999999998,40.347299999999997
+36.45928,40.347349999999999
+36.459490000000002,40.34742</coordinates>
+        </LinearRing>
+      </outerBoundaryIs>
+    </Polygon>
+  </Placemark>
+</kml>

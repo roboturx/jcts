@@ -1,0 +1,61 @@
+Duruşma Tarihi	dosya no-avukat		davalı		miktar	son-işlem tarihi-mahkeme-durum 		30-08-2023
+	
+		2015/10771--sağır	izzet erdemir	
+		2018/133300-emrullah	birleşim	 -14		 itiraz edilmiş
+		2018/133301-emrullah	birleşim	 -18		 itiraz edilmiş
+		2020/16055-		tokat belediyesi  -6		 belediye masrafı yatırmamış	
+
+		2019/7514-emrullah	aliye al	 313	18-08-23 icra hukuk mahk. satış sorulmuş
+		2019/6230-emrullah	ferhat bülbül		01-08-23 haciz başlatılmış
+		2019/19245-emrullah	kubilay perçin	   2	05-07-23 5300 TL para yatmış
+		2022/15561-emrullah	elmalı taş	 380		 takipte	
+		2022/12820-emrullah	murat karaboyun	3400		 takipte	
+		2019/38044-çırdaklı	murat karagülle    9		 takipte
+
+14-09-2023	2023/423-emrullah	irfan bacak		14-09-23 9:25 tokat 4.asliye ceza mahkemesi duruşma
+
+18-09-2023	2023/13337-emrullah	adem kesici	 119	
+		17-08-23 tahliye talepli icra örnek 13 30 gün süre verilerek yollandı
+		24-08-23 borca zamanında (7 gün içinde) ZAMANAŞIMI diye itiraz etti (GEÇERSİZ İTİRAZ)
+		18-09-23 verilen 30 günlük süre geçtikten sonra Adem Bey temerrüde düşecek; icra hukuk mahkemesinden 
+		itirazın kaldırılması ve tahliye istenecek
+		sonuç:   Kira sözleşmesine açıkça itiraz etmediği için borcu kabul etmiş sayılır. 
+			 Zaman aşımı kira sözleşmelerinde 5 yıldır. 
+			 icra hukuk mahkemesi itirazı kaldırır, 
+			 Yaptığı ödemeleri banka makbuzlarıyla ispat eder. 
+			 Resmi kalan borç için haciz başlar.
+			 tahliyeyi kendi yapar veya zorla gerçekleştirilir, 
+
+12-10-2023	2022/739-		orman işletme		12-10-23 10:05 3. asliye ceza duruşma
+
+
+28-09-2023	2022/209 -doğanöz	heltaş		istinaftan döndü 28-09-23 icra hukuk mahkemesi
+
+13-10-2023	2022/7795 -doğanöz	heltas	 	 102	
+		14-06-23 ?? tahliye talepSİZ ?? icra ödeem emri örnek 13 30 gün süre verilerek yollandı
+		
+		21-06-23 borca zamanında (7 gün içinde) borç yoktur diye itiraz etti (GEÇERSİZ İTİRAZ)
+		15-07-23 verilen otuz günlük süre doldu
+			 istinafa giden dosyada usulsüz tahliye hariç davanın devamına karar verildi
+		02-08-23 itirazın kaldırılması davası açıldı
+		13-10-23 icra hukuk itirazın kaldırılması duruşma
+		sonuç:   Kira sözleşmesine açıkça sözleşmeye itiraz etmediği için borcu kabul etmiş sayılır. 
+			 
+			 icra hukuk mahkemesi itirazı kaldırır, 
+			 Varsa Yaptığı ödemeleri banka makbuzlarıyla ispat eder. 
+			 Resmi kalan borç için haciz başlar.
+			 tahliye talep edilmediği için kiracı olmaya devam eder. Kurtulması için 
+			 noterden atila balcı'ya ihtar çekmesi gerekir.
+			 
+			 06-07-2012 tarihli sözleşmeye istinaden, tahliye edilemediği için
+			 ve ihtar çekme süresini geçirdiği için (en geç 05-04-2023 tarihi)
+			 bir süre sonra 22-23 ve 23-24 kirası için 30 günlük süreli ihtar çekilir.
+			 2 yıllık klira bedelide tahsil edilebilir. Aynı avukat olması gerekmiyor.
+
+			 atila balcıya noterden boşalttığına dair süresinde ihtar çekmediği sürece
+			 her yıl aynı şartlarla kira bedeli talep edilebilir ve öder.
+
+
+
+
+
