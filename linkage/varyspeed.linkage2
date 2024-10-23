@@ -1,0 +1,24 @@
+<linkage2>
+	<program zoom="1.690000" xoffset="857" yoffset="434" scalefactor="1.000000" units="Millimeters"/>
+	<connector id="0" selected="false" layer="16" x="505.500000" y="-266.500000" anchor="true" color="16711680"/>
+	<connector id="1" selected="false" layer="16" x="505.500000" y="-126.000000" color="12632064"/>
+	<connector id="2" selected="false" layer="16" x="461.000000" y="-266.500000" anchor="true" input="true" rpm="3.500000" color="32768"/>
+	<connector id="3" selected="false" layer="16" x="505.500000" y="-204.000000" slider="true" color="16711808">
+		<slidelimit id="0"/>
+		<slidelimit id="1"/>
+	</connector>
+	<connector id="4" selected="false" name="Variable Speed Rotation Test" layer="1" x="422.000000" y="-317.999902" color="13158600"/>
+	<Link id="2" selected="false" layer="1" linesize="1" color="13158600">
+		<connector id="4"/>
+	</Link>
+	<Link id="0" selected="false" layer="16" linesize="1" color="16711680">
+		<connector id="0"/>
+		<connector id="1"/>
+	</Link>
+	<Link id="1" selected="false" layer="16" linesize="1" color="12632064">
+		<connector id="2"/>
+		<connector id="3"/>
+	</Link>
+	<selected>
+	</selected>
+</linkage2>

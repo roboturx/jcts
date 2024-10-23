@@ -1,0 +1,21 @@
+<linkage2>
+	<program zoom="1.000000" xoffset="268" yoffset="166" scalefactor="1.000000" units="Millimeters"/>
+	<connector id="0" selected="false" layer="16" x="200.000000" y="-100.000000" anchor="true" input="true" rpm="30.000000" color="16711680"/>
+	<connector id="1" selected="false" layer="16" x="200.000000" y="-65.000000" color="12632064"/>
+	<connector id="2" selected="false" layer="16" x="300.000000" y="-100.000000" color="32768"/>
+	<connector id="3" selected="false" layer="16" x="300.000000" y="-300.000000" anchor="true" color="16711808"/>
+	<Link id="0" selected="false" layer="16" linesize="1" color="16711680">
+		<connector id="0"/>
+		<connector id="1"/>
+	</Link>
+	<Link id="1" selected="false" layer="16" linesize="1" color="12632064">
+		<connector id="1"/>
+		<connector id="2"/>
+	</Link>
+	<Link id="2" selected="false" layer="16" linesize="1" color="32768">
+		<connector id="2"/>
+		<connector id="3"/>
+	</Link>
+	<selected>
+	</selected>
+</linkage2>
