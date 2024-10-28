@@ -1,5 +1,5 @@
 <linkage2>
-	<program zoom="39.373764" xoffset="-2666" yoffset="-2883" scalefactor="1.000000" units="Millimeters" backgroundtransparency="0.000000" backgroundscale="1.000000" xgrid="" ygrid=""/>
+	<program zoom="30.287511" xoffset="-1650" yoffset="-2116" scalefactor="1.000000" units="Millimeters" backgroundtransparency="0.000000" backgroundscale="1.000000" xgrid="" ygrid=""/>
 	<connector id="1" selected="false" layer="16" x="-218.544957" y="70.652118" anchor="true" input="true" rpm="-5.000000" limitangle="90.000000" startoffset="1.000000" color="12632064" usercolor="false"/>
 	<connector id="2" selected="false" layer="16" x="-184.529209" y="70.652118" color="32768" usercolor="false"/>
 	<connector id="4" selected="false" layer="16" x="-189.164977" y="74.388191" color="6854344" usercolor="false"/>
@@ -18,7 +18,11 @@
 	<connector id="14" selected="false" layer="1" x="-75.401575" y="73.618704" fastenconnector="5" color="13158600" usercolor="false"/>
 	<connector id="15" selected="false" layer="1" x="-74.370590" y="73.700787" fastenconnector="5" color="13158600" usercolor="false"/>
 	<connector id="19" selected="false" layer="1" x="-63.574060" y="74.388191" color="13158600" usercolor="false"/>
-	<connector id="20" selected="true" layer="16" x="-65.986100" y="77.067447" color="13140032" usercolor="false"/>
+	<connector id="20" selected="false" layer="16" x="-65.986100" y="77.067447" color="13140032" usercolor="false"/>
+	<connector id="23" selected="false" layer="16" x="-53.510509" y="74.659747" anchor="true" input="true" rpm="15.000000" color="16711680" usercolor="false"/>
+	<connector id="24" selected="true" layer="16" x="-44.788708" y="77.716725" slider="true" color="12632064" usercolor="false">
+		<SlideSpline id="0"/>
+	</connector>
 	<Link id="1" selected="false" layer="16" linesize="1" shapetype="hull" color="12632064" usercolor="false">
 		<connector id="1"/>
 		<connector id="2"/>
@@ -83,8 +87,18 @@
 		<connector id="10"/>
 		<connector id="18"/>
 	</Link>
+	<Link id="11" selected="false" layer="16" linesize="1" shapetype="hull" color="2146336" usercolor="false">
+		<connector id="23"/>
+		<connector id="24"/>
+	</Link>
+	<spline id="0" selected="false" locked="false" layer="16" linesize="1" fastenconnector="24" color="16711680" usercolor="false" closed="false">
+		<segment nodeType="smooth" start="-47.074494,76.446844" end="-46.312565,77.716725" type="bezier" control1="-47.568135,76.446844" control2="-46.806206,77.716725"/>
+		<segment nodeType="smooth" start="-46.312565,77.716725" end="-45.550636,76.446844" type="bezier" control1="-45.818924,77.716725" control2="-46.044277,76.446844"/>
+		<segment nodeType="smooth" start="-45.550636,76.446844" end="-44.788708,77.716725" type="bezier" control1="-45.056995,76.446844" control2="-44.295066,77.716725"/>
+		<segment nodeType="smooth" start="-44.788708,77.716725" end="-47.074494,76.446844" type="bezier" control1="-45.660323,77.716725" control2="-46.202878,76.446844"/>
+	</spline>
 	<selected>
-		<connector id="20"/>
+		<connector id="24"/>
 	</selected>
 	<background></background>
 </linkage2>
