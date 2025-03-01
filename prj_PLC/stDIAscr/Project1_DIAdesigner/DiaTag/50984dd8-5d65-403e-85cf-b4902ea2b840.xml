@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Symbolconfiguration>
+  <Header>
+    <ProjectInfo name="Project1_DIAdesigner" devicename="Controller_1" appname="Controller_1" devType="6" />
+  </Header>
+  <TypeList />
+  <NodeList>
+    <Node name="Controller_1" nodeflags="NonAccessibleName">
+      <Node name="Default_Tag_Table" nodeflags="NonAccessibleName" />
+      <Node name="CANopen_Tag_Table" nodeflags="NonAccessibleName" />
+      <Node name="EIP_Produced_Tag_Table" nodeflags="NonAccessibleName" />
+      <Node name="EIP_Consumed_Tag_Table" nodeflags="NonAccessibleName" />
+      <Node name="C_Tag_Table" nodeflags="NonAccessibleName" />
+    </Node>
+  </NodeList>
+</Symbolconfiguration>
