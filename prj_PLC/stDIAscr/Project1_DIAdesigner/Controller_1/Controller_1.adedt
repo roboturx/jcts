@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<AddressEdit>
+  <AddressEditCollection Location="M" />
+  <AddressEditCollection Location="D" />
+  <AddressEditCollection Location="T" />
+  <AddressEditCollection Location="C" />
+  <AddressEditCollection Location="HC" />
+  <AddressEditCollection Location="FR" />
+</AddressEdit>
