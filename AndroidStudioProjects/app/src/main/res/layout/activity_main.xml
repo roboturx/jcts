@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Force overwrite to fix the file state mismatch -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".MainActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="VİNÇ" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <TextView
+        android:id="@+id/status_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/appbar_layout"
+        android:padding="8dp"
+        android:text="Durum: Başlatılıyor..."
+        android:textAlignment="center" />
+
+    <ListView
+        android:id="@+id/devices_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/buttons_grid"
+        android:layout_below="@+id/status_textview"
+        android:layout_marginTop="8dp" />
+
+    <GridLayout
+        android:id="@+id/buttons_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:columnCount="2"
+        android:rowCount="2">
+
+        <Button
+            android:id="@+id/button1"
+            android:text="Yukarı"
+            android:drawableTop="@android:drawable/arrow_up_float" />
+
+        <Button
+            android:id="@+id/button2"
+            android:text="Aşağı"
+            android:drawableTop="@android:drawable/arrow_down_float" />
+
+        <Button
+            android:id="@+id/button3"
+            android:text="Sol"/>
+
+        <Button
+            android:id="@+id/button4"
+            android:text="Sağ"/>
+
+    </GridLayout>
+
+</RelativeLayout>

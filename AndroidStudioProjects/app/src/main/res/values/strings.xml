@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="status_scanning">Durum: Taranıyor...</string>
+    <string name="status_connecting">Durum: Bağlanılıyor...</string>
+    <string name="status_connected">Durum: Bağlandı</string>
+    <string name="status_connection_failed">Durum: Bağlantı hatası</string>
+    <string name="status_disconnected">Durum: Bağlantı kesildi</string>
+    <string name="status_scan_started">Durum: Tarama başlatıldı...</string>
+    <string name="status_scan_finished">Durum: Tarama tamamlandı.</string>
+    <string name="status_starting_scan">Durum: Tarama başlatılıyor...</string>
+    <string name="status_permissions_granted">Durum: İzinler verildi.</string>
+    <string name="status_permissions_denied">Durum: İzinler reddedildi.</string>
+    <string name="status_bt_requesting">Durum: Bluetooth\'un açılması isteniyor...</string>
+    <string name="status_bt_denied">Durum: Bluetooth açma reddedildi.</string>
+    <string name="status_bt_ready">Durum: Bluetooth hazır.</string>
+    <string name="status_no_bluetooth">Cihaz Bluetooth\'u desteklemiyor.</string>
+    <string name="status_location_off">Lütfen Konum Servislerini (GPS) açın.</string>
+    <string name="unknown_device">Bilinmeyen Cihaz</string>
+    <string name="status_connect_permission_missing">Bağlantı için izin eksik.</string>
+    <string name="status_connection_failed_reason">Bağlantı Hatası: %1$s</string>
+</resources>
