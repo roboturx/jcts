@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hak Düzenle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Hak Düzenle</h1>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="plaka" class="form-label">Plaka</label>
+                <input type="text" class="form-control" id="plaka" name="plaka" value="{{ right.plaka }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="start_date" class="form-label">Başlangıç Tarihi</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" value="{{ right.start_date }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="finish_date" class="form-label">Bitiş Tarihi</label>
+                <input type="date" class="form-control" id="finish_date" name="finish_date" value="{{ right.finish_date }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="durum" class="form-label">Durum</label>
+                <select class="form-control" id="durum" name="durum">
+                    <option value="AKTİF" {% if right.durum == 'AKTİF' %}selected{% endif %}>Aktif</option>
+                    <option value="BEKLEMEDE" {% if right.durum == 'BEKLEMEDE' %}selected{% endif %}>Beklemede</option>
+                    <option value="BİTTİ" {% if right.durum == 'BİTTİ' %}selected{% endif %}>Bitti</option>
+                    <option value="BORÇLU" {% if right.durum == 'BORÇLU' %}selected{% endif %}>Borçlu</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="odeme" class="form-label">Ödeme</label>
+                <input type="number" step="0.01" class="form-control" id="odeme" name="odeme" value="{{ right.odeme }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="günlükfiat" class="form-label">Günlük Fiyat</label>
+                <input type="number" step="0.01" class="form-control" id="günlükfiat" name="günlükfiat" value="{{ right.günlükfiat }}" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </form>
+        <a href="{{ url_for('superuser') }}" class="btn btn-secondary mt-3">Geri</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Ana Menüye Dön</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+# --- 1. SMTP / MAİL AYARLARI ---
+# Gmail kullanıyorsanız 'Uygulama Şifresi' almanız gerekir.
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SENDER_MAIL = "kendinparket@gmail.com" 
+# 16 haneli uygulama şifreniz
+#SENDER_PASS = "pmtp lekb civl zupv " #roboturx
+SENDER_PASS = "sjou txmx qnix oqty" #kendinparket
+ADMIN_MAIL = "roboturx@gmail.com"

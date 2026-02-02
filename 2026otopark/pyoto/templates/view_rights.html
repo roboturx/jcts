@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakları Görüntüle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Haklar: {{ plaka }}</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kod</th>
+                    <th>Başlangıç</th>
+                    <th>Bitiş</th>
+                    <th>Durum</th>
+                    <th>Ödeme</th>
+                    <th>Günlük Fiyat</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for right in rights %}
+                <tr>
+                    <td>{{ right.kod }}</td>
+                    <td>{{ right.start_date }}</td>
+                    <td>{{ right.finish_date }}</td>
+                    <td>{{ right.durum }}</td>
+                    <td>{{ right.odeme }}</td>
+                    <td>{{ right.günlükfiat }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('superuser') }}" class="btn btn-secondary">Geri</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Ana Menüye Dön</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

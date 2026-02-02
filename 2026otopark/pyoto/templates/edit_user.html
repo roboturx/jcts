@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Düzenle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Kullanıcı Düzenle</h1>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="plaka" class="form-label">Plaka</label>
+                <input type="text" class="form-control" id="plaka" name="plaka" value="{{ user.plaka }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="name" class="form-label">Ad</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="surname" class="form-label">Soyad</label>
+                <input type="text" class="form-control" id="surname" name="surname" value="{{ user.surname }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="tel" class="form-label">Telefon</label>
+                <input type="text" class="form-control" id="tel" name="tel" value="{{ user.tel }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="eposta" class="form-label">E-posta</label>
+                <input type="email" class="form-control" id="eposta" name="eposta" value="{{ user.eposta }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="arac_marka" class="form-label">Araç Marka</label>
+                <input type="text" class="form-control" id="arac_marka" name="arac_marka" value="{{ user.araç_marka }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="passw" class="form-label">Şifre</label>
+                <input type="password" class="form-control" id="passw" name="passw" value="{{ user.passw }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="durum" class="form-label">Durum</label>
+                <select class="form-control" id="durum" name="durum">
+                    <option value="AKTİF" {% if user.durum == 'AKTİF' %}selected{% endif %}>Aktif</option>
+                    <option value="BEKLEMEDE" {% if user.durum == 'BEKLEMEDE' %}selected{% endif %}>Beklemede</option>
+                    <option value="BİTTİ" {% if user.durum == 'BİTTİ' %}selected{% endif %}>Bitti</option>
+                    <option value="BORÇLU" {% if user.durum == 'BORÇLU' %}selected{% endif %}>Borçlu</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Güncelle</button>
+        </form>
+        <a href="{{ url_for('superuser') }}" class="btn btn-secondary mt-3">Geri</a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Ana Menüye Dön</a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
