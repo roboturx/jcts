@@ -1,0 +1,16 @@
+>>> %Run -c $EDITOR_CONTENT
+
+MPY: soft reboot
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ImportError: no module named 'network'
+
+https://www.waveshare.com/wiki/Raspberry_Pi_Pico_2_W
+Firmware library
+
+    Pico 2 W Firmware (Micropython)
+
+    mp_firmware_unofficial_latest.uf2
+
+    dosyasını firmware olarak yükle.
+    bunun dışındaki firmwarelerde "network" hatası ile başlıyor.
