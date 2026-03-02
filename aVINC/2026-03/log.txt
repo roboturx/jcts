@@ -1,0 +1,8 @@
+Sürüm No       | İşlem                   | Detay
+--------------------------------------------------------------------------------
+2026-03-02.007 | V033 Güncelleme         | 10 kademeli barlar, yeşil alan genişletildi.
+2026-03-02.008 | V034 Thonny Fix         | Thonny durdurma sorunu için sleep ve interrupt eklendi.
+2026-03-02.009 | V035 Geometri Fix       | Sinyal barı kumanda yüksekliğine (stretch) çekildi.
+2026-03-02.010 | V036 Renk Sırası        | Yeşil ve Koyu Yeşil barların yerleri değiştirildi.
+2026-03-02.011 | V036 ANAKOD             | Tüm stabil özellikler tek bir ana dosyada birleştirildi.
+--------------------------------------------------------------------------------
