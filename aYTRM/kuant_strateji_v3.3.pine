@@ -1,0 +1,252 @@
+//@version=5
+strategy("Yapay Zeka Kuant Fon Algoritmasi - v3.3 Production", 
+         overlay=true, 
+         initial_capital=1000000, 
+         process_orders_on_close=true, 
+         pyramiding=20,
+         commission_type=strategy.commission.percent,
+         commission_value=0.1,
+         slippage=2)
+
+// ======================================================================================
+// v3.3 EKLEMELER (v3.1'e ek olarak):
+// - Islem saati penceresi 17:45'e kadar genisletildi (gun sonu alim icin)
+//   Gerekce: Ani hareket riski her saatte var; aksam almak gece gap riskini
+//   ortadan kaldiriyor, sabah almanin en buyuk riski budur.
+// ======================================================================================
+
+// --- Girdiler ---
+bist_periyot      = input.int(21,   title="BIST 100 Ana Filtre")
+max_spread        = input.float(5.0, title="Maksimum Ortalama Uzakligi (%)") / 100
+komisyon_oran     = input.float(0.1, title="Komisyon (%)") / 100
+max_drawdown_pct  = input.float(20.0, title="Maks Drawdown Limiti (%)") / 100
+risk_per_trade    = input.float(1.0,  title="Islem Basi Risk (%)") / 100
+hacim_carpan      = input.float(1.5,  title="Hacim Filtresi Carpani")
+
+// --- 1. Tarih Filtresi ---
+tarih_uygun = (year >= 2016)
+
+// --- 2. Islem Saati Filtresi (10:30 - 17:45) ---
+saat_uygun = (hour > 10 or (hour == 10 and minute >= 30)) and (hour < 17 or (hour == 17 and minute <= 45))
+
+// --- 3. Oynaklik Analizi ---
+atr_klasik = ta.atr(14)
+hiz_onayi  = ta.change(atr_klasik) > 0
+
+// --- 4. Boga Tespiti - 3 Mum Konfirmasyon ---
+bist_ema    = ta.ema(close, bist_periyot)
+boga_kosulu = close > bist_ema
+piyasa_boga = boga_kosulu and boga_kosulu[1] and boga_kosulu[2]
+
+zaman_stopu_siniri = piyasa_boga ? 5 : 2
+
+// --- 5. Piyasa Rejimi Filtresi - BIST100 Endeks (Look-Ahead Korumali) ---
+endeks        = request.security("BIST:XU100", timeframe.period, close, barmerge.gaps_off, barmerge.lookahead_off)
+endeks_ema50  = ta.ema(endeks, 50)
+endeks_yukari = endeks > endeks_ema50 and endeks > endeks_ema50[1]
+
+// --- 6. VWAP Filtresi ---
+vwap_uygun = close > ta.vwap
+
+// Bollinger Bantlari
+orta_bant      = ta.sma(close, 20)
+standart_sapma = ta.stdev(close, 20)
+dinamik_sapma  = hiz_onayi ? 2.4 : 1.8
+ust_bant       = orta_bant + (dinamik_sapma * standart_sapma)
+bb_uygun       = close < ust_bant
+
+// --- 7. Trend ve Guc Gostergeleri ---
+ema_8  = ta.ema(close, 8)
+ema_12 = ta.ema(close, 12)
+ema_17 = ta.ema(close, 17)
+ema_26 = ta.ema(close, 26)
+
+macd_hizli_ema = hiz_onayi ? ema_8  : ema_12
+macd_yavas_ema = hiz_onayi ? ema_17 : ema_26
+
+macdLine   = macd_hizli_ema - macd_yavas_ema
+signalLine = ta.ema(macdLine, 9)
+macd_al    = macdLine > signalLine
+
+[_, _, adx] = ta.dmi(14, 14)
+adx_guclu  = adx > 20
+mfi_uygun  = ta.mfi(close, 14) > 40
+
+// --- 8. Hacim Filtresi ---
+hacim_ortalama = ta.sma(volume, 20)
+hacim_uygun    = volume > (hacim_ortalama * hacim_carpan)
+
+// --- 9. Dinamik Kasa Yonetimi ---
+kasa_orani      = piyasa_boga ? (adx > 30 ? 10.0 : 5.0) : 3.0
+ilk_giris_orani = kasa_orani * 0.5
+
+// --- 10. Sistemik Max Drawdown Korumasi ---
+var float en_yuksek_kasa = strategy.equity
+if (strategy.equity > en_yuksek_kasa)
+    en_yuksek_kasa := strategy.equity
+
+mevcut_kasa_kaybi = (en_yuksek_kasa - strategy.equity) / en_yuksek_kasa
+kasa_guvende = mevcut_kasa_kaybi < max_drawdown_pct
+
+// --- Alim Stratejisi ---
+v_ema13   = ta.ema(close, 13)
+v_ema34   = ta.ema(close, 34)
+sinyal_ema = piyasa_boga ? v_ema13 : v_ema34
+
+spread_uygun = (close - sinyal_ema) / sinyal_ema <= max_spread
+
+pvt_degeri = ta.cum(ta.change(close) / close * volume)
+cmf_uygun  = ta.sma(pvt_degeri, 20) > ta.sma(pvt_degeri, 50)
+
+al_kosulu = (close > sinyal_ema) and macd_al and bb_uygun and adx_guclu and mfi_uygun and spread_uygun and vwap_uygun and tarih_uygun and saat_uygun and hacim_uygun and kasa_guvende and endeks_yukari
+
+// --- On Izleme (Erken Uyari) - mfi ve spread haric, bunlar bar kapanmadan degisebilir ---
+on_izleme = (close > sinyal_ema) and macd_al and bb_uygun and adx_guclu and vwap_uygun and tarih_uygun and saat_uygun and endeks_yukari and kasa_guvende
+
+// --- Durum Degiskenleri ---
+var float giris_fiyati    = na
+var float en_yuksek_fiyat = na
+var int   asama           = 0
+var bool  piramit_yapildi = false
+var int   giris_bar       = 0
+
+// --- Yeni Pozisyon Acilisi (sifira bolme korumali) ---
+if (al_kosulu and strategy.position_size == 0)
+    atr_giris     = ta.atr(14)
+    stop_mesafe   = (piyasa_boga ? 1.5 : 2.2) * atr_giris
+    risk_tutari   = strategy.equity * risk_per_trade
+    kontrat_adedi = stop_mesafe > 0 ? (risk_tutari / stop_mesafe) : (strategy.equity * (ilk_giris_orani / 100)) / close
+
+    kasa_kontrat  = (strategy.equity * (ilk_giris_orani / 100)) / close
+    kontrat_final = math.min(kontrat_adedi, kasa_kontrat)
+
+    strategy.entry("KuantAl", strategy.long, qty=kontrat_final)
+    giris_fiyati      := close
+    en_yuksek_fiyat   := close
+    asama             := 0
+    piramit_yapildi   := false
+    giris_bar         := bar_index
+
+// --- Pozisyon Kapaninca Bayragi Sifirla ---
+if (strategy.position_size == 0 and not na(giris_fiyati))
+    piramit_yapildi := false
+    giris_fiyati    := na
+
+// --- Pozisyon Yonetimi ---
+if (strategy.position_size > 0)
+    if (high > en_yuksek_fiyat)
+        en_yuksek_fiyat := high
+
+    atr_10 = ta.atr(10)
+    atr_14 = ta.atr(14)
+    atr    = hiz_onayi ? atr_10 : atr_14
+
+    esik_baslangic = (2.0 * atr) / giris_fiyati
+    esik_ucus      = (4.0 * atr) / giris_fiyati
+    guncel_kar     = (en_yuksek_fiyat - giris_fiyati) / giris_fiyati
+
+    if (guncel_kar >= esik_baslangic and guncel_kar < esik_ucus)
+        asama := 1
+    else if (guncel_kar >= esik_ucus)
+        asama := 2
+
+    // --- Piramit Ekleme ---
+    if (asama == 1 and not piramit_yapildi and (strategy.position_size * close) < (strategy.equity * (kasa_orani / 100)))
+        ek_kontrat      = (strategy.equity * (ilk_giris_orani / 100)) / close
+        strategy.entry("KuantAl", strategy.long, qty=ek_kontrat)
+        piramit_yapildi := true
+
+    // --- Stop-Loss Hesabi ---
+    float hesaplanan_stop = na
+
+    if (asama == 0)
+        hesaplanan_stop := giris_fiyati - (piyasa_boga ? 1.5 : 2.2) * atr
+    else if (asama == 1)
+        potansiyel_stop = strategy.position_avg_price * (1 + esik_baslangic)
+        emniyet_baraji  = close * 0.995
+        hesaplanan_stop := math.min(potansiyel_stop, emniyet_baraji)
+    else if (asama == 2)
+        dinamik_takip_payi = (1.5 * atr) / close
+        hesaplanan_stop    := en_yuksek_fiyat * (1 - dinamik_takip_payi)
+
+    strategy.cancel("Cikis")
+    strategy.exit("Cikis", "KuantAl", stop=hesaplanan_stop)
+
+// --- Zaman Stopu ---
+if (strategy.position_size > 0 and (bar_index - giris_bar) >= zaman_stopu_siniri and asama == 0)
+    strategy.close("KuantAl", comment="Kuant Zaman Stopu")
+
+// --- Gosterge Paneli ---
+var table bilgi = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 70), border_width=1)
+if barstate.islast
+    table.cell(bilgi, 0, 0, "Drawdown", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 0, str.tostring(math.round(mevcut_kasa_kaybi * 100, 2)) + "%", text_color=mevcut_kasa_kaybi > 0.15 ? color.red : color.green, text_size=size.small)
+    table.cell(bilgi, 0, 1, "Sermaye", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 1, str.tostring(math.round(strategy.equity, 0)), text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 0, 2, "Piyasa Rejimi", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 2, piyasa_boga ? "BOGA" : "AYI", text_color=piyasa_boga ? color.green : color.red, text_size=size.small)
+    table.cell(bilgi, 0, 3, "BIST100 Trend", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 3, endeks_yukari ? "YUKARI" : "ASAGI", text_color=endeks_yukari ? color.green : color.red, text_size=size.small)
+    table.cell(bilgi, 0, 4, "Pozisyon Asamasi", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 4, strategy.position_size > 0 ? ("Asama " + str.tostring(asama)) : "Pozisyon Yok", text_color=color.yellow, text_size=size.small)
+    table.cell(bilgi, 0, 5, "Sinyal Durumu", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 5, al_kosulu ? "AL SARTLARI TAMAM" : "BEKLE", text_color=al_kosulu ? color.lime : color.gray, text_size=size.small)
+    table.cell(bilgi, 0, 6, "Piramit Miktari", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 6, strategy.position_size > 0 and asama == 1 and not piramit_yapildi ? str.tostring(math.round((strategy.equity * (ilk_giris_orani / 100)) / close, 0)) + " lot" : "-", text_color=color.aqua, text_size=size.small)
+    table.cell(bilgi, 0, 7, "On Izleme (KESIN DEGIL)", text_color=color.white, text_size=size.small)
+    table.cell(bilgi, 1, 7, on_izleme and strategy.position_size == 0 ? "RADARDA - 18:00 BEKLE" : "-", text_color=color.orange, text_size=size.small)
+// ======================================================================================
+// MANUEL TAKIP ICIN: ALARM + GORSEL ISARETLER
+// ======================================================================================
+
+// --- Giris Sinyali Isareti ---
+yeni_giris = al_kosulu and strategy.position_size == 0
+plotshape(yeni_giris, title="AL Sinyali", location=location.belowbar,
+          color=color.lime, style=shape.triangleup, size=size.normal, text="AL")
+
+// --- On Izleme Isareti (erken uyari - KESIN DEGIL, gunluk kapanisi bekle) ---
+on_izleme_sinyali = on_izleme and not al_kosulu and strategy.position_size == 0
+plotshape(on_izleme_sinyali, title="On Izleme (Kesin Degil)", location=location.belowbar,
+          color=color.orange, style=shape.circle, size=size.tiny, text="~RADAR")
+
+// --- Piramit Ekleme Isareti ---
+piramit_sinyali = asama == 1 and not piramit_yapildi and strategy.position_size > 0 and
+                   (strategy.position_size * close) < (strategy.equity * (kasa_orani / 100))
+plotshape(piramit_sinyali, title="Piramit Ekleme", location=location.belowbar,
+          color=color.aqua, style=shape.triangleup, size=size.tiny, text="EKLE")
+
+// --- Pozisyon Kapanma Isareti (Stop veya Zaman Stopu) ---
+pozisyon_kapandi = strategy.position_size == 0 and strategy.position_size[1] > 0
+plotshape(pozisyon_kapandi, title="Cikis", location=location.abovebar,
+          color=color.red, style=shape.triangledown, size=size.normal, text="CIKIS")
+
+// --- Stop Seviyesi Cizgisi (pozisyon acikken gorunur) ---
+var float son_stop = na
+if (strategy.position_size > 0)
+    atr_10p = ta.atr(10)
+    atr_14p = ta.atr(14)
+    atrp    = hiz_onayi ? atr_10p : atr_14p
+    esik_bp = (2.0 * atrp) / giris_fiyati
+    if (asama == 0)
+        son_stop := giris_fiyati - (piyasa_boga ? 1.5 : 2.2) * atrp
+    else if (asama == 1)
+        son_stop := math.min(strategy.position_avg_price * (1 + esik_bp), close * 0.995)
+    else if (asama == 2)
+        son_stop := en_yuksek_fiyat * (1 - (1.5 * atrp) / close)
+else
+    son_stop := na
+
+plot(son_stop, title="Stop Seviyesi", color=color.red, style=plot.style_circles, linewidth=1)
+
+// --- ALARM KOSULLARI (TradingView: sag tik -> Alarm Ekle) ---
+alertcondition(on_izleme_sinyali, title="ON IZLEME - Yaklasan Sinyal (KESIN DEGIL)",
+     message="RADARA AL: {{ticker}} fiyat {{close}} - UYARI: Bu KESIN sinyal degil, gun ici degisebilir. Emir vermeden once GUNLUK KAPANISI (18:00) bekle ve 'AL SARTLARI TAMAM' yazisini gor.")
+
+alertcondition(yeni_giris, title="AL Sinyali - KESIN (Kapanis Onaylı)",
+     message="KESIN AL sinyali - kapanis onaylandi: {{ticker}} fiyat {{close}}")
+
+alertcondition(piramit_sinyali, title="Piramit Ekleme Sinyali",
+     message="Piramit ekleme firsati: {{ticker}} fiyat {{close}}")
+
+alertcondition(pozisyon_kapandi, title="Cikis Sinyali",
+     message="Pozisyon kapandi: {{ticker}} fiyat {{close}}")

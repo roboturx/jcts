@@ -1,0 +1,108 @@
+//@version=5
+indicator("Yapay Zeka Kuant - Ayri Gosterge Paneli", overlay=false)
+
+// ======================================================================================
+// AYRI GOSTERGE PANELI (Strateji Dosyasinin Yaninda Calisir)
+// - Bu script strategy() DEGIL indicator() - backtest yapmaz, pozisyon acmaz
+// - Ana strateji dosyasindaki (v3.4) TUM sinyal hesaplamalarini birebir tekrarlar
+// - Grafigin ALTINDA ayri bir pencerede (pane) acilir
+// - GOSTEREMEDIKLERI: Sermaye, Drawdown, Pozisyon Asamasi, Piramit Miktari
+//   (bunlar sadece strategy.equity / strategy.position_size'a bagli, sadece
+//    ana strateji dosyasinin kendi panelinde gorunur)
+// - KULLANIM: Bu indicator'u strateji ile AYNI grafige, ikinci bir gosterge
+//   olarak ekle. Ikisi ayni anda calisir, birbirini etkilemez.
+// ======================================================================================
+
+// --- Girdiler (strateji dosyasiyla birebir ayni olmali) ---
+bist_periyot      = input.int(21,   title="BIST 100 Ana Filtre")
+max_spread        = input.float(5.0, title="Maksimum Ortalama Uzakligi (%)") / 100
+hacim_carpan      = input.float(1.5,  title="Hacim Filtresi Carpani")
+max_drawdown_pct  = input.float(20.0, title="Maks Drawdown Limiti (%) [Bilgi Amacli]") / 100
+
+panel_boyut = input.string("Kucuk", title="Panel Yazi Boyutu (+ / - Zoom)",
+     options=["Cok Kucuk", "Kucuk", "Normal", "Buyuk", "Cok Buyuk"])
+panel_punto = panel_boyut == "Cok Kucuk" ? size.tiny :
+              panel_boyut == "Kucuk" ? size.small :
+              panel_boyut == "Normal" ? size.normal :
+              panel_boyut == "Buyuk" ? size.large : size.huge
+
+// --- 1. Tarih Filtresi ---
+tarih_uygun = (year >= 2016)
+
+// --- 2. Islem Saati Filtresi (10:30 - 17:45) ---
+saat_uygun = (hour > 10 or (hour == 10 and minute >= 30)) and (hour < 17 or (hour == 17 and minute <= 45))
+
+// --- 3. Oynaklik Analizi ---
+atr_klasik = ta.atr(14)
+hiz_onayi  = ta.change(atr_klasik) > 0
+
+// --- 4. Boga Tespiti - 3 Mum Konfirmasyon ---
+bist_ema    = ta.ema(close, bist_periyot)
+boga_kosulu = close > bist_ema
+piyasa_boga = boga_kosulu and boga_kosulu[1] and boga_kosulu[2]
+
+// --- 5. Piyasa Rejimi Filtresi - BIST100 Endeks (Look-Ahead Korumali) ---
+endeks        = request.security("BIST:XU100", timeframe.period, close, barmerge.gaps_off, barmerge.lookahead_off)
+endeks_ema50  = ta.ema(endeks, 50)
+endeks_yukari = endeks > endeks_ema50 and endeks > endeks_ema50[1]
+
+// --- 6. VWAP Filtresi ---
+vwap_uygun = close > ta.vwap
+
+// Bollinger Bantlari
+orta_bant      = ta.sma(close, 20)
+standart_sapma = ta.stdev(close, 20)
+dinamik_sapma  = hiz_onayi ? 2.4 : 1.8
+ust_bant       = orta_bant + (dinamik_sapma * standart_sapma)
+bb_uygun       = close < ust_bant
+
+// --- 7. Trend ve Guc Gostergeleri ---
+ema_8  = ta.ema(close, 8)
+ema_12 = ta.ema(close, 12)
+ema_17 = ta.ema(close, 17)
+ema_26 = ta.ema(close, 26)
+
+macd_hizli_ema = hiz_onayi ? ema_8  : ema_12
+macd_yavas_ema = hiz_onayi ? ema_17 : ema_26
+
+macdLine   = macd_hizli_ema - macd_yavas_ema
+signalLine = ta.ema(macdLine, 9)
+macd_al    = macdLine > signalLine
+
+[_, _, adx] = ta.dmi(14, 14)
+adx_guclu  = adx > 20
+mfi_uygun  = ta.mfi(close, 14) > 40
+
+// --- 8. Hacim Filtresi ---
+hacim_ortalama = ta.sma(volume, 20)
+hacim_uygun    = volume > (hacim_ortalama * hacim_carpan)
+
+// --- Alim Sinyali (pozisyon bagimsiz - herkes hesaplayabilir) ---
+v_ema13   = ta.ema(close, 13)
+v_ema34   = ta.ema(close, 34)
+sinyal_ema = piyasa_boga ? v_ema13 : v_ema34
+
+spread_uygun = (close - sinyal_ema) / sinyal_ema <= max_spread
+
+// NOT: kasa_guvende (drawdown korumasi) burada YOK cunku strategy.equity
+// gerektiriyor - bu indicator'da pozisyon/sermaye bilgisi olmadigi icin
+// bu sart devre disi birakildi. Gercek drawdown korumasi ANA STRATEJIDE calisir.
+al_kosulu = (close > sinyal_ema) and macd_al and bb_uygun and adx_guclu and mfi_uygun and spread_uygun and vwap_uygun and tarih_uygun and saat_uygun and hacim_uygun and endeks_yukari
+
+// --- On Izleme (Erken Uyari) ---
+on_izleme = (close > sinyal_ema) and macd_al and bb_uygun and adx_guclu and vwap_uygun and tarih_uygun and saat_uygun and endeks_yukari
+
+// ======================================================================================
+// PANEL (Tek Satir, Yatay - Grafigin Altinda Ayri Pencerede)
+// ======================================================================================
+var table bilgi = table.new(position.top_left, 6, 1, bgcolor=color.new(color.black, 70), border_width=0, frame_width=0)
+if barstate.islast
+    table.cell(bilgi, 0, 0, (piyasa_boga ? "BOGA" : "AYI"), text_color=piyasa_boga ? color.green : color.red, text_size=panel_punto)
+    table.cell(bilgi, 1, 0, "XU100:" + (endeks_yukari ? "YUKARI" : "ASAGI"), text_color=endeks_yukari ? color.green : color.red, text_size=panel_punto)
+    table.cell(bilgi, 2, 0, "Hacim:" + (hacim_uygun ? "OK" : "YOK"), text_color=hacim_uygun ? color.green : color.red, text_size=panel_punto)
+    table.cell(bilgi, 3, 0, "VWAP:" + (vwap_uygun ? "OK" : "YOK"), text_color=vwap_uygun ? color.green : color.red, text_size=panel_punto)
+    table.cell(bilgi, 4, 0, al_kosulu ? "AL SARTLARI TAMAM" : "BEKLE", text_color=al_kosulu ? color.lime : color.gray, text_size=panel_punto)
+    table.cell(bilgi, 5, 0, (on_izleme and not al_kosulu) ? "RADARDA" : "-", text_color=color.orange, text_size=panel_punto)
+
+// --- Gorsel Sinyal Cizgisi (alt pencerede referans) ---
+plot(al_kosulu ? 1 : 0, title="AL Sinyali (1=Evet)", color=color.lime, style=plot.style_columns)
