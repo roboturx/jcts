@@ -1,0 +1,103 @@
+===============================================================================
+ALTIVAR 12 (V1.1 IE01) - KAPI OTOMASYONU SIKIŞMA ALGILAMA REHBERİ
+===============================================================================
+
+Bu belge, Schneider Electric Altivar 12 V1.1 firmware sürümüne sahip sürücüde,
+motorun torkunu koruyarak bir engele çarptığında (sıkışma anında) anında 
+durmasını (Hızlı Duruş - FSt) sağlamak için yapılan tüm parametre ve 
+kablolama değişikliklerini içerir.
+
+-------------------------------------------------------------------------------
+1. PARAMETRE DEĞİŞİKLİKLERİ VE YAPILMA NEDENLERİ
+-------------------------------------------------------------------------------
+Giriş: COnF -> FULL menüsüne gelin, Jog Dial butonuna 2 saniye basılı tutun.
+
+• nPr = 0.18 kW
+  - Neden: Motorunuz 0.12 kW'tır ancak V1.1 yazılımının izin verdiği en alt 
+    limit 0.18 kW olduğu için sürücünün kalkışta kilitlenmemesi amacıyla 
+    bu en küçük değere ayarlanmıştır.
+
+• nCr = 2.5 A
+  - Neden: Motorunuzun gerçek akımı 0.43 A'dir. Sürücü yazılımı minimum 2.5 A 
+    giriş kabul ettiği için motor koruma modelini yanıltmamak adına izin verilen 
+    en alt sınır seçilmiştir.
+
+• Ctt = PErF
+  - Neden: Fabrika ayarı olan 'Std' modu motoru düz bir oranla sürer ve torku 
+    düşürür. 'PErF' (Vektör Kontrol) modu motorun yük altındaki torkunu otomatik 
+    algılayıp ekstra güç basmasını sağlar. Motorun güçsüzlükten inlemesini keser.
+
+• uFr = %150 (veya %200)
+  - Neden: Düşük frekanslarda ve ilk kalkış anında motorun torkunu (itme gücünü) 
+    doğrudan artırır. Bu sayede motor elinizle tutulduğunda kilitlenip kalmaz, 
+    bıraktığınızda dönmeye devam edebilir.
+
+• Ctd = 0.4 A (I_O- menüsü altında)
+  - Neden: Sıkışma algılama akım eşiğidir. Motor boşta 0.2 - 0.3 A çekerken 
+    tuttuğunuzda 0.4 A'e çıkmaktadır. Sürücünün engeli ayırt edebilmesi için 
+    tam bu sınır değere set edilmiştir.
+
+• tCC = 2C
+  - Neden: 2 Telli kontrol modu. İleri ve geri yön butonlarının kararlı seviye 
+    sinyali ile çalışmasını sağlar.
+
+• tCt = LEL
+  - Neden: Seviye kontrolü. Girişte sinyal olduğu sürece motor döner, sinyal 
+    kesildiğinde durur. Sıkışma kilitlenmesini çözmek için şarttır.
+
+• nPL = nEG
+  - Neden: Donanımsal klemens köprülerimiz (COM - CLO) ile sürücü işlemcisinin 
+    polaritesini (Negatif lojik) birbirine eşitlemek, çakışmayı önlemek için yapıldı.
+
+• LO1 = CtA
+  - Neden: Sürücüye 'Akım Ctd eşiğini (0.4 A) aşarsa LO1 lojik çıkışından elektrik 
+    sinyali gönder' emrini vermek için atandı.
+
+• LO1S = nEG
+  - Neden: FSt parametresi fail-safe (0 aktif) çalıştığı için çıkış sinyalini 
+    tersine çevirdik. Normalde sürekli elektrik gönderir, sıkışmada elektriği keser.
+
+• FSt = L4L (FUn- -> Stt- altında)
+  - Neden: Hızlı Duruş parametresi. LI4 girişindeki elektrik kesildiği anda 
+    (sıkışma anında) motorun enerjisini milisaniyeler içinde kupkuru sıfırlar.
+
+• nSt = nO
+  - Neden: İlk denemelerdeki kalıcı güvenlik kilidini (kablo kopukluğu korumasını) 
+    devre dışı bırakmak için kapatıldı.
+
+• rSF = L3H (FLt- altında)
+  - Neden: LI3 girişini harici hata sıfırlama (Reset) pimi yapmak için atandı.
+
+-------------------------------------------------------------------------------
+2. KLEMENS KABLO BAĞLANTI ŞEMASI VE NEDENLERİ
+-------------------------------------------------------------------------------
+
+• BAĞLANTI 1: LO1 klemensi ----> LI4 klemensine köprü kablo
+  - Nedeni: Sıkışma anında akım 0.4 A'i geçince LO1 çıkışının ürettiği sinyali 
+    doğrudan 'Durdurma' emrini verecek olan LI4 girişine fiziksel olarak taşır.
+
+• BAĞLANTI 2: COM klemensi ----> CLO klemensine köprü kablo
+  - Nedeni: Eski tip Altivar 12 transistör çıkışlarında LO1'in tetikleme akımı 
+    üretebilmesi için dahili şase (0V) referansını tamamlamasını sağlar. Bu kablo 
+    olmazsa LO1 asla sinyal gönderemez.
+
+• BAĞLANTI 3: +24V, LI1, LI2 ve LI3 Dağılımı
+  - LI1: Kapama (İleri) yönü tetik sinyali.
+  - LI2: Açma (Geri) yönü tetik sinyali. Aynı zamanda JOG (kurtarma) pimidir.
+  - LI3: Sıkışma sonrası sistemi kilitten çıkarmak için harici reset darbesi.
+
+-------------------------------------------------------------------------------
+3. MEKANİK İYİLEŞTİRME VE KRİTİK UYARI (ÜÇGEN BAĞLANTI)
+-------------------------------------------------------------------------------
+Motorunuzun arkasında redüktör olmasına rağmen elle kolayca durdurulabilmesi 
+motorun şu an Yıldız (380V) bağlı olduğunu gösterir. Sürücü monofaze (220V) 
+çıkış verdiği için motor sargıları tam tork üretememektedir.
+
+Aksiyon: Motor klemens kutusunu açın. Metal köprü plakalarını yan yana üç dik 
+çizgi ( ||| ) olacak şekilde ÜÇGEN (Δ) bağlantıya çevirin. 
+
+Üçgen bağlantı yapıldığında motor elle durdurulamayacak kadar güçlenecek, engelle 
+karşılaştığında akımı anında 1.5 A - 2.0 A seviyesine fırlatacaktır. Üçgen sonrası 
+kalkışta demeraj hatası almamak için Ctd eşiğini 0.8 A veya 1.0 A seviyesine 
+yükseltmeniz gerekecektir.
+===============================================================================
